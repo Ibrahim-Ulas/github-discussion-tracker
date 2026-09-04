@@ -19,6 +19,10 @@ A tracker to pull discussions from a designated repository, mark the unanswered 
 ```bash
 # Bağımlılıkları yükle
 go mod tidy
+```
 
+```bash
 # Programı çalıştır
 go run main.go
+
+```
