@@ -32,14 +32,19 @@ type GraphQLResponse struct {
 	} `json:"data"`
 }
 
-func getDiscussionsFromGitHub(owner, repoName, token, apiUrl string) (GraphQLResponse, error) {
+func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName string) (GraphQLResponse, error) {
+	categoryId, err := getCategoryID(owner, repoName, token, apiUrl, categoryName)
+	if err != nil {
+		fmt.Print(err)
+		return GraphQLResponse{}, err
+	}
 	discussionsQuery := fmt.Sprintf(`query {
 		repository(owner:"%s", name:"%s"){
-			discussions(first:5, states:OPEN) {
+			discussions(first:20, categoryId:"%s"states:OPEN) {
 				nodes {
 					title
 					databaseId
-					comments(first:10) {
+					comments(last:1) {
 						nodes{
 							databaseId
 						}
@@ -47,7 +52,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl string) (GraphQLRes
 				}
 			}
 		}
-	}`, owner, repoName)
+	}`, owner, repoName, categoryId)
 	client := http.Client{}
 
 	payload := map[string]string{"query": discussionsQuery}
@@ -59,7 +64,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl string) (GraphQLRes
 	requestBodyReader := bytes.NewReader(requestBody)
 	req, err := http.NewRequest("POST", apiUrl, requestBodyReader)
 	if err != nil {
-		fmt.Printf("Error creating new request: %v", err)
+		fmt.Printf("Error creating new request: %v\n", err)
 		return GraphQLResponse{}, err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
@@ -75,12 +80,11 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl string) (GraphQLRes
 	if err != nil {
 		return GraphQLResponse{}, err
 	}
-
+	fmt.Printf("Status Code: %v\n", res.StatusCode)
 	discussions := GraphQLResponse{}
 	err = json.Unmarshal(resBytes, &discussions)
 	if err != nil {
 		return GraphQLResponse{}, err
 	}
-
 	return discussions, nil
 }
