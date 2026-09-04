@@ -2,6 +2,8 @@
 
 A tracker to pull discussions from a designated repository, mark the unanswered ones and notify the user.
 
+I wrote this for personal use and my boot.dev personal project course. I am currently working in an customer support department of a company where we get our bug reports from customers through Github discussions.
+
 ## Features
 
 * **CategoryFilter** An optional feature where user can set a category name to filter with
