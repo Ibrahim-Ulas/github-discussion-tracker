@@ -33,14 +33,24 @@ type GraphQLResponse struct {
 }
 
 func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName string) (GraphQLResponse, error) {
-	categoryId, err := getCategoryID(owner, repoName, token, apiUrl, categoryName)
-	if err != nil {
-		fmt.Print(err)
-		return GraphQLResponse{}, err
+	var categoryId string
+	var err error
+	if categoryName != "" {
+		categoryId, err = getCategoryID(owner, repoName, token, apiUrl, categoryName)
+		if err != nil {
+			fmt.Print(err)
+			return GraphQLResponse{}, err
+		}
 	}
+
+	categoryIdQuery := ""
+	if categoryId != "" {
+		categoryIdQuery = fmt.Sprintf(`categoryId: "%s",`, categoryId)
+	}
+
 	discussionsQuery := fmt.Sprintf(`query {
 		repository(owner:"%s", name:"%s"){
-			discussions(first:20, categoryId:"%s"states:OPEN) {
+			discussions(first:20, %s states:OPEN) {
 				nodes {
 					title
 					databaseId
@@ -52,7 +62,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 				}
 			}
 		}
-	}`, owner, repoName, categoryId)
+	}`, owner, repoName, categoryIdQuery)
 	client := http.Client{}
 
 	payload := map[string]string{"query": discussionsQuery}
