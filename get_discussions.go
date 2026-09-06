@@ -18,6 +18,7 @@ type CommentConnection struct {
 
 type DiscussionNode struct {
 	ID       int               `json:"databaseId"`
+	Number 	int			   `json:"number"`
 	Title    string            `json:"title"`
 	Comments CommentConnection `json:"comments"`
 }
@@ -53,6 +54,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 			discussions(first:20, %s states:OPEN) {
 				nodes {
 					title
+					number
 					databaseId
 					comments(last:1) {
 						nodes{
