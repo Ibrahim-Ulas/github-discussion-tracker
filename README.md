@@ -6,8 +6,9 @@ I wrote this for personal use and my boot.dev personal project course.
 
 ## Features
 
-* **CategoryFilter** An optional feature where user can set a category name to filter with
-* **Comment Follow** Any discussion unanswered or new comments coming to an already replied discussion is being tracked
+* **Category Filter** An optional feature where user can set a category name to filter with.
+* **Comment Follow** Any discussion unanswered or new comments coming to an already replied discussion is being tracked.
+* **Notification** With a given interval to get notified, program will notify you if there is a new comment or an unanswered discussion.
 
 ## Requirements
 
@@ -25,6 +26,6 @@ go mod tidy
 
 ```bash
 # Programı çalıştır
-go run main.go
+go run .
 
 ```
