@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 type CategoriesResponse struct {
@@ -35,7 +36,7 @@ func getCategoryID(owner, repoName, token, apiURL, categoryName string) (string,
 		}
 	}`, owner, repoName)
 
-	client := http.Client{}
+	client := http.Client{Timeout: 60 * time.Second}
 
 	payload := map[string]string{"query": categoryQuery}
 	requestBody, err := json.Marshal(payload)
@@ -63,6 +64,7 @@ func getCategoryID(owner, repoName, token, apiURL, categoryName string) (string,
 		fmt.Printf("Error reading response body: %v\n", err)
 		return "", err
 	}
+	defer res.Body.Close()
 	responseBody := CategoriesResponse{}
 	err = json.Unmarshal(responseBodyBytes, &responseBody)
 	if err != nil {

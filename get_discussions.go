@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 type CommentNode struct {
@@ -18,7 +19,7 @@ type CommentConnection struct {
 
 type DiscussionNode struct {
 	ID       int               `json:"databaseId"`
-	Number 	int			   `json:"number"`
+	Number   int               `json:"number"`
 	Title    string            `json:"title"`
 	Comments CommentConnection `json:"comments"`
 }
@@ -65,7 +66,8 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 			}
 		}
 	}`, owner, repoName, categoryIdQuery)
-	client := http.Client{}
+	
+	client := http.Client{Timeout: 60 * time.Second}
 
 	payload := map[string]string{"query": discussionsQuery}
 	requestBody, err := json.Marshal(payload)
@@ -92,6 +94,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 	if err != nil {
 		return GraphQLResponse{}, err
 	}
+	defer res.Body.Close()
 	fmt.Printf("Status Code: %v\n", res.StatusCode)
 	discussions := GraphQLResponse{}
 	err = json.Unmarshal(resBytes, &discussions)

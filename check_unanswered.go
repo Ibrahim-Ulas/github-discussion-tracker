@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/gen2brain/beeep"
 )
 
 func checkUnansweredDiscussion(comments CommentConnection) bool {
@@ -26,11 +24,7 @@ func markDiscussions(nodes []DiscussionNode, allDiscussions *AllDiscussions) {
 			if _, ok := allDiscussions.repliedDiscussions[discussionID]; ok {
 				if allDiscussions.repliedDiscussions[discussionID] != commentNodes[0].ID {
 					fmt.Printf("%v titled discussion has a new comment!\n", node.Title)
-					
-					err := beeep.Alert("New Comment!",fmt.Sprintf("#%d numbered discussion has a new comment!", node.Number),"")
-					if err != nil {
-						fmt.Printf("Error sending notification: %v\n", err)
-					}
+					queueNotification("New Comment!", fmt.Sprintf("#%d numbered discussion has a new comment!", node.Number))
 				}
 			}
 			allDiscussions.repliedDiscussions[discussionID] = commentNodes[0].ID

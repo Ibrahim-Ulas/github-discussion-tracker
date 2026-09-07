@@ -69,7 +69,7 @@ func main() {
 			for i := range allDiscussions.UnansweredDiscussions {
 				fmt.Printf("Discussion %d: %d\n", i, allDiscussions.UnansweredDiscussions[i])
 			}
-			sendNotification(lastNotificationTime, &allDiscussions, notificationCooldownMultiplier)
+			sendNotification(&lastNotificationTime, &allDiscussions, notificationCooldownMultiplier)
 		}
 	}
 

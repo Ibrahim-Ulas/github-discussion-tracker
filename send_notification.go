@@ -2,26 +2,51 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
 	"time"
 
 	"github.com/gen2brain/beeep"
 )
 
-func sendNotification(lastNotificationTime time.Time, allDiscussions *AllDiscussions, notificationCooldownMultiplier int) {
+type notification struct {
+	title   string
+	message string
+}
+
+var notifyCh = make(chan notification, 5)
+
+func init() {
+	go func() {
+		runtime.LockOSThread()
+		defer runtime.UnlockOSThread()
+		for i := range notifyCh {
+			err := beeep.Alert(i.title, i.message, "")
+			if err != nil {
+				fmt.Printf("Error sending notification %v\n", err)
+			}
+		}
+	}()
+}
+
+func queueNotification(title, message string) {
+	select {
+	case notifyCh <- notification{title: title, message: message}:
+	default:
+		fmt.Println("Notification queue full, skipping")
+	}
+}
+
+func sendNotification(lastNotificationTime *time.Time, allDiscussions *AllDiscussions, notificationCooldownMultiplier int) {
 	if len(allDiscussions.UnansweredDiscussions) > 0 {
-		if time.Since(lastNotificationTime) >= time.Duration(notificationCooldownMultiplier)*time.Second-1*time.Second {
+		if time.Since(*lastNotificationTime) >= time.Duration(notificationCooldownMultiplier)*time.Second-1*time.Second {
+			*lastNotificationTime = time.Now()
 			var sb strings.Builder
 			sb.WriteString("Unanswered discussions:\n")
 			for i := range allDiscussions.UnansweredDiscussions {
 				sb.WriteString(fmt.Sprintf("- #%d\n", allDiscussions.UnansweredDiscussions[i]))
 			}
-			err := beeep.Alert("Unanswered Discussions", sb.String(), "")
-			if err != nil {
-				fmt.Printf("Error sending notification: %v\n", err)
-			} else {
-				lastNotificationTime = time.Now()
-			}
+			queueNotification("Unanswered Discussions", sb.String())
 		}
 	}
 }
