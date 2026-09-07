@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gen2brain/beeep"
 	"github.com/joho/godotenv"
 )
 
@@ -23,6 +24,7 @@ func main() {
 		log.Fatal("Error loading or reading .env file")
 	}
 	fmt.Print("Starting Discussion Tracker...\n")
+	beeep.AppName = "GitHub Discussion Tracker"
 	checkIntervalString := os.Getenv("CHECK_INTERVAL_IN_SECONDS")
 	checkInterval, err := strconv.Atoi(checkIntervalString)
 	if err != nil {
