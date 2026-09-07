@@ -15,7 +15,12 @@ I wrote this for personal use and my boot.dev personal project course.
 * Go (1.18+)
 * Github Personal Access Token
 
-## Setup And Configuration
+## Usage
+1. Download the compiled file from releases for your OS.
+2. Create a new .env file or copy .env.example and configure it with your values.
+3. Start the program with the compiled file.
+
+## Build
 1. Clone the project.
 2. Copy the "env.example" and change the values to your own configuration.
 
@@ -30,7 +35,3 @@ go run .
 
 ```
 
-## Alternative Setup
-1. Download the compiled file from releases for your OS.
-2. Create a new .env file or copy .env.example and configure it with your values.
-3. Start the program with the compiled file.
