@@ -25,12 +25,12 @@ I wrote this for personal use and my boot.dev personal project course.
 2. Copy the "env.example" and change the values to your own configuration.
 
 ```bash
-# Bağımlılıkları yükle
+# Download dependencies
 go mod tidy
 ```
 
 ```bash
-# Programı çalıştır
+# Run the program
 go run .
 
 ```
