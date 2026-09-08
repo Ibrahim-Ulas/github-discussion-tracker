@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"strings"
 	"time"
 
@@ -18,13 +17,14 @@ var notifyCh = make(chan notification, 5)
 
 func init() {
 	go func() {
-		runtime.LockOSThread()
-		defer runtime.UnlockOSThread()
 		for i := range notifyCh {
-			err := beeep.Alert(i.title, i.message, "")
-			if err != nil {
-				fmt.Printf("Error sending notification %v\n", err)
-			}
+			i := i
+			go func() {
+				err := beeep.Alert(i.title, i.message, "")
+				if err != nil {
+					fmt.Printf("Error sending notification %v\n", err)
+				}
+			}()
 		}
 	}()
 }
