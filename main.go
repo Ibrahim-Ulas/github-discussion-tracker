@@ -34,7 +34,8 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	ticker := time.NewTicker(time.Duration(checkInterval) * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
+	remainingSeconds := checkInterval
 
 	var lastNotificationTime time.Time
 
@@ -80,7 +81,15 @@ func main() {
 			fmt.Println("\nClosing application...")
 			return
 		case <-ticker.C:
-			check()
+			remainingSeconds--
+			if remainingSeconds >= 0 {
+				fmt.Printf("\r Next check in: %2d seconds...", remainingSeconds)
+			} else {
+				fmt.Printf("\r\n")
+				check()
+				remainingSeconds = checkInterval
+			}
+
 		}
 	}
 }
