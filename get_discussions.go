@@ -9,8 +9,20 @@ import (
 	"time"
 )
 
+type ReactionNode struct {
+	Content string `json:"content"`
+}
+
+type ReactionConnection struct {
+	Nodes []ReactionNode `json:"nodes"`
+}
+type Actor struct {
+	Username string `json:"login"`
+}
 type CommentNode struct {
-	ID int `json:"databaseId"`
+	Author    Actor              `json:"author"`
+	ID        int                `json:"databaseId"`
+	Reactions ReactionConnection `json:"reactions"`
 }
 
 type CommentConnection struct {
@@ -18,6 +30,7 @@ type CommentConnection struct {
 }
 
 type DiscussionNode struct {
+	Author   Actor             `json:"author"`
 	ID       int               `json:"databaseId"`
 	Number   int               `json:"number"`
 	Title    string            `json:"title"`
@@ -54,11 +67,23 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 		repository(owner:"%s", name:"%s"){
 			discussions(first:20, %s states:OPEN) {
 				nodes {
+					author{
+						login
+					}
 					title
 					number
 					databaseId
-					comments(last:1) {
+					comments(last:10) {
 						nodes{
+							author {
+								login
+							}
+							reactions(first:5) {
+								nodes{
+									content
+								}
+								
+							}
 							databaseId
 						}
 					}
@@ -66,7 +91,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 			}
 		}
 	}`, owner, repoName, categoryIdQuery)
-	
+
 	client := http.Client{Timeout: 60 * time.Second}
 
 	payload := map[string]string{"query": discussionsQuery}
@@ -94,6 +119,7 @@ func getDiscussionsFromGitHub(owner, repoName, token, apiUrl, categoryName strin
 	if err != nil {
 		return GraphQLResponse{}, err
 	}
+	// fmt.Print(string(resBytes))
 	defer res.Body.Close()
 	fmt.Printf("Status Code: %v\n", res.StatusCode)
 	discussions := GraphQLResponse{}

@@ -14,7 +14,6 @@ import (
 )
 
 type AllDiscussions struct {
-	repliedDiscussions    map[int]int
 	UnansweredDiscussions map[int]int
 }
 
@@ -49,7 +48,6 @@ func main() {
 	categoryName := os.Getenv("CATEGORY_NAME")
 	API_URL := "https://api.github.com/graphql"
 	allDiscussions := AllDiscussions{
-		repliedDiscussions:    make(map[int]int),
 		UnansweredDiscussions: make(map[int]int),
 	}
 
@@ -89,7 +87,6 @@ func main() {
 				check()
 				remainingSeconds = checkInterval
 			}
-
 		}
 	}
 }
